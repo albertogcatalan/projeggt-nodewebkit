@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Projeggt App</title>
+    
+    <link rel="stylesheet"  href="css/pggt.min.css">
+    <link rel="stylesheet" href="css/jquery.mobile.structure-1.3.2.min.css">
+    
+    <!-- google webfonts LATO -->
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic" />
+	
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.mobile-1.3.2.min.js"></script>
+    
+</head>
+<body>
+              
+         <!-- activity -->
+         <div data-role="page" id="activity" data-theme="a">
+            
+            <div data-role="header">
+            	<a href="#menupanel" data-role="button" data-icon="bars" data-iconpos="notext" data-theme="a" data-inline="true">Bars</a>
+                <h1>Discover</h1>
+                
+            </div>
+            
+            <div data-role="panel" data-position="left" data-display="reveal" id="menupanel">
+            
+			   		<ul data-role="listview">
+			   		<li data-role="list-divider" data-theme="a">Menu</li>
+				    <li data-icon="home" ><a href="#activity">Discover</a></li>
+				    <li data-icon="info"><a href="#about">About</a></li>
+				</ul>
+			    
+			</div><!-- /panel -->
+            
+           
+                        
+            
+            <div data-role="content" >	
+                <div class="content-primary">
+                	<! -- projeggts list -->
+                    <ul class="ul-last-projects" data-role="listview" data-inset="true">
+                    
+                                                
+                    </ul>
+                    
+                    <a href="#" style="width:100%;display:none;" class="moreButton show-page-loading-msg" data-role="button" data-pag="1" data-textonly="false" data-textvisible="false" data-msgtext="" data-inline="true">Load more</a>       
+                </div>		
+            </div>
+            
+                        
+        </div>
+         
+         <div data-role="page" id="about" data-theme="a">
+            
+            <div data-role="header">
+            	<a href="#menupanel" data-role="button" data-icon="bars" data-iconpos="notext" data-theme="a" data-inline="true">Bars</a>
+                <h1>About</h1>
+                
+            </div>
+            
+           <div data-role="panel" data-position="left" data-display="reveal" id="menupanel">
+            
+			   	<ul data-role="listview">
+			   		<li data-role="list-divider" data-theme="a">Menu</li>
+				    <li data-icon="home" ><a href="#activity">Discover</a></li>
+				    <li data-icon="info"><a href="#about">About</a></li>
+				</ul>
+			    
+			</div><!-- /panel -->
+                        
+            
+            <div data-role="content" >	
+                <div class="content-primary">
+                	<h3 class="ui-title">Projeggt 0.1.8</h3>
+			        <p>Incubate ideas with crowdfunding.<br/><br/>
+			        	More at <a href="http://www.projeggt.com" target="_blank">Projeggt.com</a><br/><br/>
+				        &copy; Projeggt 2014 
+			        </p>
+      
+                </div>		
+            </div>
+            
+                        
+        </div>
+		 
+		             
+</div><!--end body -->		 
+        
+<script type="text/javascript">
+
+$(function () {
+
+	pag = 0;
+	
+	$.mobile.loading( "show", {
+		textVisible: false,
+	});
+	
+	$.get('http://api.projeggt.com/v1/project/all/', function(data) {
+	    if (data)
+	    {	
+			var ul_last = $(".ul-last-projects");
+			for(var p in data) {
+			
+				var fundersAndremaining;
+				if (data[p].remaining == 0){
+					fundersAndremaining = data[p].countFunders+' funders';
+				} else {
+					fundersAndremaining = data[p].remaining+' days';
+				}
+						
+				ul_last.append('<li data-role="list-divider" data-theme="a">'+data[p].city+'<span class="ui-li-count" data-theme="a" style="border:none;">'+data[p].collected+'€ | '+data[p].funded+' | '+fundersAndremaining+'</span></li><li><a href="'+data[p].url+'" rel="external" target="_blank"><img src="'+data[p].imageURL+'" alt="'+data[p].name+'" style="max-width:200px;max-height:81px;width:140px;height:81px;"><h3 style="margin-left:60px;">'+data[p].name+'</h3></a></li>');
+
+				
+				ul_last.listview('refresh');
+			}
+			
+			$.mobile.loading( "hide" );
+			$(".moreButton").css('display', 'block');
+		    					    
+	    }
+	}, "json");
+	
+	$( document ).on( "click", ".show-page-loading-msg", function() {
+	    $.mobile.loading( "show", {
+			textVisible: false,
+		});
+	})
+	.on("click", ".moreButton", function(event){
+	
+		pag = $(this).data('pag') + 1;
+		$(this).data('pag', pag);
+		
+		
+		
+		$.get('http://api.projeggt.com/v1/project/all/'+pag+'/', function(data) {
+		    if (data)
+		    {	
+		    	var ul_last = $(".ul-last-projects");
+				for(var p in data) {
+				
+					var fundersAndremaining;
+					if (data[p].remaining == 0){
+						fundersAndremaining = data[p].countFunders+' funders';
+					} else {
+						fundersAndremaining = data[p].remaining+' days';
+					}
+							
+					ul_last.append('<li data-role="list-divider" data-theme="a">'+data[p].city+'<span class="ui-li-count" data-theme="a" style="border:none;">'+data[p].collected+'€ | '+data[p].funded+' | '+fundersAndremaining+'</span></li><li><a href="'+data[p].url+'" rel="external" target="_blank"><img src="'+data[p].imageURL+'" alt="'+data[p].name+'" style="max-width:200px;max-height:81px;width:140px;height:81px;"><h3 style="margin-left:60px;">'+data[p].name+'</h3></a></li>');
+	
+					
+					ul_last.listview('refresh');
+				}			
+				
+				$.mobile.loading( "hide" );	
+					
+			}
+		}, "json")
+	});
+	
+		 
+
+        
+})
+</script>	
+        
+</body>
+</html>
