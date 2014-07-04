@@ -1,8 +1,0 @@
-{
-  "name": "Projeggt App",
-  "version": "0.1.8",
-  "main": "index.html",
-  "window": {
-        "toolbar": false
-    }
-}
